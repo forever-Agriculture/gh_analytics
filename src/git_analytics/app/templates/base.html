@@ -29,8 +29,8 @@
                     <!--<input type="text" value="{{ form.owner }}" class="form-control" id="owner" placeholder="enter owner name">-->
                   <!--</div>-->
                   <div class="form-group">
-                    <label for="repo">Repository name</label>
-                    <input type="text" value="{{ form.repo }}" class="form-control" id="repo" aria-describedby="repo" placeholder="enter preferable repository">
+                    <label for="repos">Repository name</label>
+                    <input type="text" value="{{ form.repos }}" class="form-control" id="repos" aria-describedby="repos" placeholder="enter preferable repositories">
                   </div>
                   <div class="form-group">
                     <label for="users">Users</label>
@@ -49,11 +49,11 @@
                </form>
 
                 <!--<p>Owner: {{ owner }}</p>-->
-                <p>Repo: {{ repo }}</p>
+                <p>Repo: {{ repos }}</p>
                 <p>Users: {{ users }}</p>
-                <!--<p>From: {{ from_date }}</p>-->
-                <!--<p>To: {{ to_date }}</p>-->
-                <!--<p>Created pull requests: {{ user_counter }}</p>-->
+                <p>From: {{ from_date }}</p>
+                <p>To: {{ to_date }}</p>
+                <p>Created pull requests: {{ global_pr_counter }}</p>
             </div>
           </div>
         </div>

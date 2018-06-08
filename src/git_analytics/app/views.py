@@ -1,13 +1,11 @@
 import requests
-import json
 from django.shortcuts import render
-from django.template import loader
-from django.http import HttpResponse, HttpResponseRedirect
 from django.views.generic.base import TemplateView
 from .forms import AnalyticsForm
 
 
 class HomePageView(TemplateView):
+    """GH analytics class"""
     template_name = "base.html"
     form_class = AnalyticsForm
 
@@ -21,49 +19,66 @@ class HomePageView(TemplateView):
         super(HomePageView, self).get(self, request, *args, **kwargs)
         form = self.form_class(request.POST)
         if form.is_valid():
-            # owner = form.cleaned_data['owner']
-            repo = form.cleaned_data['repo']
+            repos = form.cleaned_data['repos']
             users = form.cleaned_data['users']
             from_date = form.cleaned_data['from_date']
             to_date = form.cleaned_data['to_date']
 
-            s = requests.Session()
+            rep_list = self.get_repos(repos)
+            global_pr_counter = 0
 
-            repo_params = {'q': repo, 'order': 'desc', 'sort': 'updated', 'per_page': '1'}
-            repo_r = s.get('https://api.github.com/search/repositories', params=repo_params)
-            repo_r.encoding = 'utf-8'
-            repo_data = repo_r.json()
+            for repo in rep_list:
+                repo_params = {'q': repo, 'repo': repo, 'order': 'desc', 'sort': 'updated'}
+                repo_resp = requests.get('https://api.github.com/search/repositories', params=repo_params)
+                repo_resp.encoding = 'utf-8'
+                json_repo = repo_resp.json()['items']
+                owner_list = self.get_owner(json_repo)
 
-            for repo in repo_data:
-                owner = self.get_owner(repo)
+                user_counter = self.count_pr(repo, owner_list, users, from_date, to_date)
+                global_pr_counter += user_counter
 
-                params = {'state': 'all', 'sort': 'created',
-                          'created': '{from_date}..{to_date}'.format(from_date=from_date, to_date=to_date),
-                          'per_page': '100'}
+                args = {'form': form, 'repos': repos, 'users': users,
+                        'from_date': from_date, 'to_date': to_date, 'global_pr_counter': global_pr_counter}
+        return render(request, self.template_name, args)
 
-                r = s.get('https://api.github.com/repos/{owner}/{repo}/pulls'.format(owner=owner, repo=repo),
-                          params=params)
-                r.encoding = 'utf-8'
-                data = r.json()
-                counter = 0
-                user_counter, user_set = self.count_users(data, users)
-                counter += user_counter
+    def count_pr(self, repo, owner_list, users, from_date, to_date):
+        global_user_counter = 0
+        for owner in owner_list:
+            pr_params = {'state': 'all', 'sort': 'created',
+                         'created': '{from_date}..{to_date}'.format(from_date=from_date, to_date=to_date),
+                         'per_page': '100'}
 
-                args = {'form': form, 'owner': owner, 'repo': repo, 'users': users,
-                        'from_date': from_date, 'to_date': to_date, 'user_counter': counter}
+            pr_resp = requests.get('https://api.github.com/repos/{owner}/{repo}/pulls'.format(owner=owner, repo=repo),
+                                   params=pr_params)
+            pr_resp.encoding = 'utf-8'
+            json_pr_resp = pr_resp.json()
+            user_counter = self.count_users(json_pr_resp, users)
+            global_user_counter += user_counter
+        return global_user_counter
 
-            return render(request, self.template_name, args)
-            #     return HttpResponse(owner)
+    @staticmethod
+    def get_repos(repos):
+        rep_list = []
+        repos = repos.split(", ")
+        for repo in repos:
+            rep_list.append(repo)
+        return rep_list
 
     @staticmethod
     def get_owner(repo):
-        owner = repo['owner']['login']
-        return owner
+        owner_list = []
+        for item in repo:
+            if item['owner']['login']:
+                owner_list.append(item['owner']['login'])
+        return owner_list
 
     @staticmethod
-    def count_users(data, users):
+    def count_users(json_pr_resp, users):
         count_list = []
-        for pull_req in data:
-            if pull_req['user']['login'] in users:
-                count_list.append(pull_req['user']['login'])
-        return len(count_list), set(count_list)
+        for pull_req in json_pr_resp:
+            try:
+                if pull_req['user']['login'] in users:
+                    count_list.append(pull_req['user']['login'])
+            except TypeError:
+                pass
+        return len(count_list)
