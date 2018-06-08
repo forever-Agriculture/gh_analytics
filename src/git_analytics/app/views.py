@@ -21,26 +21,44 @@ class HomePageView(TemplateView):
         super(HomePageView, self).get(self, request, *args, **kwargs)
         form = self.form_class(request.POST)
         if form.is_valid():
-            owner = form.cleaned_data['owner']
+            # owner = form.cleaned_data['owner']
             repo = form.cleaned_data['repo']
             users = form.cleaned_data['users']
             from_date = form.cleaned_data['from_date']
             to_date = form.cleaned_data['to_date']
 
             s = requests.Session()
-            params = {'state': 'all', 'sort': 'created',
-                      'created': '{from_date}..{to_date}'.format(from_date=from_date, to_date=to_date),
-                      'per_page': '100'}
-            r = s.get('https://api.github.com/repos/{owner}/{repo}/pulls'.format(owner=owner, repo=repo),
-                      params=params)
-            r.encoding = 'utf-8'
-            data = r.json()
-            user_counter, user_set = self.count_users(data, users)
 
-            args = {'form': form, 'owner': owner, 'repo': repo, 'users': users,
-                    'from_date': from_date, 'to_date': to_date, 'user_counter': user_counter}
+            repo_params = {'q': repo, 'order': 'desc', 'sort': 'updated', 'per_page': '1'}
+            repo_r = s.get('https://api.github.com/search/repositories', params=repo_params)
+            repo_r.encoding = 'utf-8'
+            repo_data = repo_r.json()
+
+            for repo in repo_data:
+                owner = self.get_owner(repo)
+
+                params = {'state': 'all', 'sort': 'created',
+                          'created': '{from_date}..{to_date}'.format(from_date=from_date, to_date=to_date),
+                          'per_page': '100'}
+
+                r = s.get('https://api.github.com/repos/{owner}/{repo}/pulls'.format(owner=owner, repo=repo),
+                          params=params)
+                r.encoding = 'utf-8'
+                data = r.json()
+                counter = 0
+                user_counter, user_set = self.count_users(data, users)
+                counter += user_counter
+
+                args = {'form': form, 'owner': owner, 'repo': repo, 'users': users,
+                        'from_date': from_date, 'to_date': to_date, 'user_counter': counter}
 
             return render(request, self.template_name, args)
+            #     return HttpResponse(owner)
+
+    @staticmethod
+    def get_owner(repo):
+        owner = repo['owner']['login']
+        return owner
 
     @staticmethod
     def count_users(data, users):
