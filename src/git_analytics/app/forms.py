@@ -2,8 +2,7 @@ from django import forms
 
 
 class AnalyticsForm(forms.Form):
-    # owner = forms.CharField(label='owner', max_length=30, required=True)
-    repos = forms.CharField(label='repos', max_length=50, required=True)
-    users = forms.CharField(label='users', max_length=30, required=True)
-    from_date = forms.CharField(label='from_date', max_length=10, required=True)
-    to_date = forms.CharField(label='to_date', max_length=10, required=True)
+    repos = forms.CharField(label='repos', required=True, min_length=3, max_length=30)
+    users = forms.CharField(label='users', required=True, min_length=3, max_length=30)
+    from_date = forms.CharField(label='from_date', required=True, min_length=10, max_length=10)
+    to_date = forms.CharField(label='to_date', required=True, min_length=10, max_length=10)

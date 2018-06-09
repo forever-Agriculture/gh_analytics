@@ -4,8 +4,7 @@ cycler==0.10.0
 Django==2.0.6
 idna==2.6
 kiwisolver==1.0.1
-matplotlib==2.2.2
-numpy==1.14.4
+optional-django==0.1.0
 pyparsing==2.2.0
 python-dateutil==2.7.3
 pytz==2018.4

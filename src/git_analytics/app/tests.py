@@ -1,3 +1,13 @@
+from mock import patch
 from django.test import TestCase
+from .views import HomePageView
 
-# Create your tests here.
+
+class TestHomePageView(TestCase):
+    def setUp(self):
+        self.maxDiff = None
+
+
+
+
+

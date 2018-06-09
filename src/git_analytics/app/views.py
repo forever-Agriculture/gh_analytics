@@ -18,6 +18,7 @@ class HomePageView(TemplateView):
     def post(self, request, *args, **kwargs):
         super(HomePageView, self).get(self, request, *args, **kwargs)
         form = self.form_class(request.POST)
+
         if form.is_valid():
             repos = form.cleaned_data['repos']
             users = form.cleaned_data['users']
@@ -37,8 +38,8 @@ class HomePageView(TemplateView):
                 user_counter = self.count_pr(repo, owner_list, users, from_date, to_date)
                 global_pr_counter += user_counter
 
-                args = {'form': form, 'repos': repos, 'users': users,
-                        'from_date': from_date, 'to_date': to_date, 'global_pr_counter': global_pr_counter}
+            args = {'form': form, 'repos': repos, 'users': users,
+                    'from_date': from_date, 'to_date': to_date, 'global_pr_counter': global_pr_counter}
         return render(request, self.template_name, args)
 
     def count_pr(self, repo, owner_list, users, from_date, to_date):
