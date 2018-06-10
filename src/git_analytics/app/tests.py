@@ -8,6 +8,3 @@ class TestHomePageView(TestCase):
         self.maxDiff = None
 
 
-
-
-

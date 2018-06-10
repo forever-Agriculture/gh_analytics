@@ -23,31 +23,27 @@
             <br>
           <div class="row">
             <div class="col-md-6">
-              <form action="" method="post" role="form">
+              <form action="" method="post" role="form" >
                   {% csrf_token %}
                   <div class="form-group col-8">
-                    <label for="repos">Repository name</label>
-                    <input type="text" name="repos" value="{{ repos }}" class="form-control" id="repos" aria-describedby="repos" placeholder="example: Cycling_admin, Rv-029.Go">
+                    <label for="id_repos">Repository name</label>
+                    <input type="text" name="repos" value="{{ repos }}" maxlength="30" minlength="3" required class="form-control" id="id_repos" aria-describedby="repos" placeholder="example: Cycling_admin, Rv-029.Go">
                     <small id="repos_id" class="form-text text-muted">Required field</small>
-                    <span class="help-block">{{ errors.repos }}</span>
                   </div>
                   <div class="form-group col-8">
-                    <label for="users">Users</label>
-                    <input type="text" name="users" value="{{ users }}" class="form-control" id="users" placeholder="example: PhilipUa, zzell, mosketrem">
+                    <label for="id_users">Users</label>
+                    <input type="text" name="users" value="{{ users }}" maxlength="30" minlength="3" required class="form-control" id="id_users" placeholder="example: PhilipUa, zzell, mosketrem">
                     <small id="users_id" class="form-text text-muted">Required field</small>
-                    <span class="help-block">{{ errors.users }}</span>
                   </div>
                   <div class="form-group col-8">
-                    <label for="from_date">From</label>
-                    <input type="text" name="from_date" value="{{ from_date }}" class="form-control" id="from_date" placeholder="example: 2018-05-20">
+                    <label for="id_from_date">From</label>
+                    <input type="text" name="from_date" value="{{ from_date }}" maxlength="10" minlength="10" required class="form-control" id="id_from_date" placeholder="example: 2018-05-20">
                     <small id="from_date_id" class="form-text text-muted">Required field</small>
-                    <span class="help-block">{{ errors.from_date }}</span>
                   </div>
                   <div class="form-group col-8">
-                    <label for="to_date">To</label>
-                    <input type="text" name="to_date" value="{{ to_date }}" class="form-control" id="to_date" placeholder="example: 2016-05-20">
+                    <label for="id_to_date">To</label>
+                    <input type="text" name="to_date" value="{{ to_date }}" maxlength="10" minlength="10" required class="form-control" id="id_to_date" placeholder="example: 2016-05-20">
                     <small id="to_date_id" class="form-text text-muted">Required field</small>
-                    <span class="help-block">{{ errors.to_date }}</span>
                   </div>
 
                   <button type="submit" style="margin-left:2.5%;" class="btn btn-primary">Submit</button>
