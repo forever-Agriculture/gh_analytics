@@ -35,7 +35,7 @@ class HomePageView(TemplateView):
                 repo_resp = requests.get('https://api.github.com/search/repositories', params=repo_params)
                 repo_resp.encoding = 'utf-8'
                 json_repo = repo_resp.json()['items']
-                owner_list = self.get_owner(json_repo)
+                owner_list = self.get_owner(json_repo, from_date, to_date)
 
                 user_counter = self.count_pr(repo, owner_list, users, from_date, to_date)
                 global_pr_counter += user_counter
@@ -50,7 +50,7 @@ class HomePageView(TemplateView):
         for owner in owner_list:
             pr_params = {'state': 'all', 'sort': 'created',
                          'created': '{from_date}..{to_date}'.format(from_date=from_date, to_date=to_date),
-                         'per_page': '500'}
+                         'per_page': '100'}
 
             pr_resp = requests.get('https://api.github.com/repos/{owner}/{repo}/pulls'.format(owner=owner, repo=repo),
                                    params=pr_params)
@@ -70,12 +70,13 @@ class HomePageView(TemplateView):
         return rep_list
 
     @staticmethod
-    def get_owner(repo):
+    def get_owner(repo, from_data, to_date):
         """searching for owners and adding them into a list"""
         owner_list = []
         for item in repo:
             if item['owner']['login']:
-                owner_list.append(item['owner']['login'])
+                if item['created_at'] >= from_data and item['created_at'] <= to_date:
+                    owner_list.append(item['owner']['login'])
         return owner_list
 
     @staticmethod

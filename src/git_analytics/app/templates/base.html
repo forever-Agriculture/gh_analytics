@@ -27,13 +27,13 @@
                   {% csrf_token %}
                   <div class="form-group col-8">
                     <label for="id_repos">Repository name</label>
-                    <input type="text" name="repos" value="{{ repos }}" maxlength="30" minlength="3" required class="form-control" id="id_repos" aria-describedby="repos" placeholder="example: Cycling_admin, Rv-029.Go">
-                    <small id="repos_id" class="form-text text-muted">Required field</small>
+                    <input type="text" name="repos" value="{{ repos }}" maxlength="50" minlength="3" required class="form-control" id="id_repos" aria-describedby="repos" placeholder="example: Cycling_admin, Rv-029.Go">
+                    <small id="repos_id" class="form-text text-muted">Required field, max 50 symbols</small>
                   </div>
                   <div class="form-group col-8">
                     <label for="id_users">Users</label>
-                    <input type="text" name="users" value="{{ users }}" maxlength="30" minlength="3" required class="form-control" id="id_users" placeholder="example: PhilipUa, zzell, mosketrem">
-                    <small id="users_id" class="form-text text-muted">Required field</small>
+                    <input type="text" name="users" value="{{ users }}" maxlength="50" minlength="3" required class="form-control" id="id_users" placeholder="example: PhilipUa, zzell, mosketrem">
+                    <small id="users_id" class="form-text text-muted">Required field, max 50 symbols</small>
                   </div>
                   <div class="form-group col-8">
                     <label for="id_from_date">From</label>
