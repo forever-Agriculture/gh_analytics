@@ -16,6 +16,8 @@ class HomePageView(TemplateView):
         return render(request, self.template_name, {'form': form})
 
     def post(self, request, *args, **kwargs):
+        """ getting requested repos, calling count_pr method and then
+         returning computed data with a plot"""
         super(HomePageView, self).get(self, request, *args, **kwargs)
         form = self.form_class(request.POST)
 
@@ -43,11 +45,12 @@ class HomePageView(TemplateView):
         return render(request, self.template_name, args)
 
     def count_pr(self, repo, owner_list, users, from_date, to_date):
+        """ counting pull requests of users in requested repos """
         global_user_counter = 0
         for owner in owner_list:
             pr_params = {'state': 'all', 'sort': 'created',
                          'created': '{from_date}..{to_date}'.format(from_date=from_date, to_date=to_date),
-                         'per_page': '100'}
+                         'per_page': '500'}
 
             pr_resp = requests.get('https://api.github.com/repos/{owner}/{repo}/pulls'.format(owner=owner, repo=repo),
                                    params=pr_params)
@@ -59,6 +62,7 @@ class HomePageView(TemplateView):
 
     @staticmethod
     def get_repos(repos):
+        """ splitting repos and adding into a list"""
         rep_list = []
         repos = repos.split(", ")
         for repo in repos:
@@ -67,6 +71,7 @@ class HomePageView(TemplateView):
 
     @staticmethod
     def get_owner(repo):
+        """searching for owners and adding them into a list"""
         owner_list = []
         for item in repo:
             if item['owner']['login']:
@@ -75,6 +80,7 @@ class HomePageView(TemplateView):
 
     @staticmethod
     def count_users(json_pr_resp, users):
+        """ count created pull requests of required users """
         count_list = []
         for pull_req in json_pr_resp:
             try:

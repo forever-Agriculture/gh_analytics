@@ -16,7 +16,6 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 
-from app import views
 from app.views import HomePageView
 
 urlpatterns = [
