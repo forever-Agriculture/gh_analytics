@@ -35,7 +35,7 @@ class HomePageView(TemplateView):
                 repo_resp = requests.get('https://api.github.com/search/repositories', params=repo_params)
                 repo_resp.encoding = 'utf-8'
                 json_repo = repo_resp.json()['items']
-                owner_list = self.get_owner(json_repo, from_date, to_date)
+                owner_list = self.get_owner(json_repo)
 
                 user_counter = self.count_pr(repo, owner_list, users, from_date, to_date)
                 global_pr_counter += user_counter
@@ -56,7 +56,7 @@ class HomePageView(TemplateView):
                                    params=pr_params)
             pr_resp.encoding = 'utf-8'
             json_pr_resp = pr_resp.json()
-            user_counter = self.count_users(json_pr_resp, users)
+            user_counter = self.count_users(json_pr_resp, users, from_date, to_date)
             global_user_counter += user_counter
         return global_user_counter
 
@@ -70,23 +70,24 @@ class HomePageView(TemplateView):
         return rep_list
 
     @staticmethod
-    def get_owner(repo, from_data, to_date):
+    def get_owner(repo):
         """searching for owners and adding them into a list"""
         owner_list = []
         for item in repo:
             if item['owner']['login']:
-                if item['created_at'] >= from_data and item['created_at'] <= to_date:
-                    owner_list.append(item['owner']['login'])
+                owner_list.append(item['owner']['login'])
         return owner_list
 
     @staticmethod
-    def count_users(json_pr_resp, users):
-        """ count created pull requests of required users """
+    def count_users(json_pr_resp, users, from_date, to_date):
+        """ counting created pull requests of required users
+            and filtering by date"""
         count_list = []
         for pull_req in json_pr_resp:
             try:
                 if pull_req['user']['login'] in users:
-                    count_list.append(pull_req['user']['login'])
+                    if pull_req['created_at'] >= from_date and pull_req['created_at'] <= to_date:
+                        count_list.append(pull_req['user']['login'])
             except TypeError:
                 pass
         return len(count_list)
