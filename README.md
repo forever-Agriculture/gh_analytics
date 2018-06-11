@@ -1,6 +1,7 @@
 # gh_analytics
 
-* A simple petproject, check a number of pull requests added by users into certain repositories, during certain period of time. Using GitHub API. *
+_A simple petproject, check a number of pull requests added by users into certain repositories, 
+during certain period of time. Using GitHub API._
 
 
 ## test data:
