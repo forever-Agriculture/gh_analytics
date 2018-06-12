@@ -10,7 +10,7 @@ class HomePageView(TemplateView):
     form_class = AnalyticsForm
 
     def post(self, request, *args, **kwargs):
-        """ getting requested repos, calling count_pr method and then
+        """ Getting requested repos, calling count_pr method and then
          returning computed data with a plot """
         super(HomePageView, self).get(self, request, *args, **kwargs)
         form = self.form_class(request.POST)
@@ -28,35 +28,50 @@ class HomePageView(TemplateView):
                 repo_params = {'q': repo, 'repo': repo, 'order': 'desc', 'sort': 'updated'}
                 repo_resp = requests.get('https://api.github.com/search/repositories', params=repo_params)
                 repo_resp.encoding = 'utf-8'
-                json_repo = repo_resp.json()['items']
-                owner_list = self.get_owner(json_repo)
-
-                user_counter = self.count_pr(repo, owner_list, users, from_date, to_date)
-                global_pr_counter += user_counter
+                try:
+                    json_repo = repo_resp.json()['items']
+                    owner_list = self.get_owner(json_repo)
+                    pr_counter = self.count_pr(repo, owner_list, users, from_date, to_date)
+                    global_pr_counter += pr_counter
+                except KeyError:
+                    pass
 
             args = {'form': form, 'repos': repos, 'users': users,
                     'from_date': from_date, 'to_date': to_date, 'global_pr_counter': global_pr_counter}
         return render(request, self.template_name, args)
 
-    def count_pr(self, repo, owner_list, users, from_date, to_date) -> int:
-        """ counting pull requests of users in requested repos """
-        global_user_counter = 0
+    def count_pr(self, repo, owner_list, users, from_date, to_date):
+        """ Counting pull requests of users in requested repos """
+        pr_counter = 0
+        user_list = self.get_users(users)
         for owner in owner_list:
-            pr_params = {'state': 'all', 'sort': 'created',
-                         'created': '{from_date}..{to_date}'.format(from_date=from_date, to_date=to_date),
-                         'per_page': '100'}
+            for user in user_list:
+                pr_resp = requests.get('https://api.github.com/search/issues?q=is:pr+author:{user}+user:{owner}+'
+                                       'repo:{repo}+created:{from_date}..{to_date}'.format(user=user, repo=repo,
+                                                                                           owner=owner,
+                                                                                           from_date=from_date,
+                                                                                           to_date=to_date))
+                pr_resp.encoding = 'utf-8'
+                json_pr_resp = pr_resp.json()
+                try:
+                    pr_counter += json_pr_resp['total_count']
+                except KeyError:
+                    pass
 
-            pr_resp = requests.get('https://api.github.com/repos/{owner}/{repo}/pulls'.format(owner=owner, repo=repo),
-                                   params=pr_params)
-            pr_resp.encoding = 'utf-8'
-            json_pr_resp = pr_resp.json()
-            user_counter = self.count_users(json_pr_resp, users, from_date, to_date)
-            global_user_counter += user_counter
-        return global_user_counter
+        return pr_counter
+
+    @staticmethod
+    def get_users(users) -> list:
+        """ Splitting users and adding into a list """
+        user_list = []
+        repos = users.split(", ")
+        for repo in repos:
+            user_list.append(repo)
+        return user_list
 
     @staticmethod
     def get_repos(repos) -> list:
-        """ splitting repos and adding into a list """
+        """ Splitting repos and adding into a list """
         rep_list = []
         repos = repos.split(", ")
         for repo in repos:
@@ -65,23 +80,9 @@ class HomePageView(TemplateView):
 
     @staticmethod
     def get_owner(repo) ->list:
-        """ searching for owners and adding them into a list """
+        """ Searching for owners and adding them into a list """
         owner_list = []
         for item in repo:
             if item['owner']['login']:
                 owner_list.append(item['owner']['login'])
         return owner_list
-
-    @staticmethod
-    def count_users(json_pr_resp, users, from_date, to_date) -> int:
-        """ counting created pull requests of required users
-            and filtering by date """
-        count_list = []
-        for pull_req in json_pr_resp:
-            try:
-                if pull_req['user']['login'] in users:
-                    if pull_req['created_at'] >= from_date and pull_req['created_at'] <= to_date:
-                        count_list.append(pull_req['user']['login'])
-            except TypeError:
-                pass
-        return len(count_list)
