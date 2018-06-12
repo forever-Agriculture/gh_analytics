@@ -1,11 +1,11 @@
 # gh_analytics
 
-_A simple petproject, check a number of pull requests added by users into certain repositories, 
+_A simple petproject, check a number of pull requests added by users into certain repositories 
 during certain period of time. Using GitHub API._
 
 ## Installation guide:
 
-_create a virtual ene and activate it:_
+_create a virtual env and activate it:_
 * python3 -m venv
 * source venv/bin/activate
 
