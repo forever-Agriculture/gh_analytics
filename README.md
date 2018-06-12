@@ -6,7 +6,7 @@ during certain period of time. Using GitHub API._
 
 ## test data:
 
-* repos = Cycling_admin, Rv-029.Go
-* users = PhilipUa, zzell
+* repos = Cycling_admin, Rv-029.Go, Rv-025.Python
+* users = PhilipUa, zzell, mosketrem, yurapa
 * from_date = 2017-02-01
 * to_date = 2019-01-01

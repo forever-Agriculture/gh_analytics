@@ -5,13 +5,13 @@ from .forms import AnalyticsForm
 
 
 class HomePageView(TemplateView):
-    """ GH analytics class """
+    """GH analytics class"""
     template_name = "base.html"
     form_class = AnalyticsForm
 
     def post(self, request, *args, **kwargs):
-        """ Getting requested repos, calling count_pr method and then
-         returning computed data with a plot """
+        """Getting requested repos, calling count_pr method and then
+         returning computed data with a plot"""
         super(HomePageView, self).get(self, request, *args, **kwargs)
         form = self.form_class(request.POST)
 
@@ -40,8 +40,8 @@ class HomePageView(TemplateView):
                     'from_date': from_date, 'to_date': to_date, 'global_pr_counter': global_pr_counter}
         return render(request, self.template_name, args)
 
-    def count_pr(self, repo, owner_list, users, from_date, to_date):
-        """ Counting pull requests of users in requested repos """
+    def count_pr(self, repo, owner_list, users, from_date, to_date) -> list:
+        """Counting pull requests of users in requested repos"""
         pr_counter = 0
         user_list = self.get_users(users)
         for owner in owner_list:
@@ -62,16 +62,16 @@ class HomePageView(TemplateView):
 
     @staticmethod
     def get_users(users) -> list:
-        """ Splitting users and adding into a list """
+        """Splitting users and adding into a list"""
         user_list = []
-        repos = users.split(", ")
-        for repo in repos:
-            user_list.append(repo)
+        users = users.split(", ")
+        for user in users:
+            user_list.append(user)
         return user_list
 
     @staticmethod
     def get_repos(repos) -> list:
-        """ Splitting repos and adding into a list """
+        """Splitting repos and adding into a list"""
         rep_list = []
         repos = repos.split(", ")
         for repo in repos:
@@ -80,7 +80,7 @@ class HomePageView(TemplateView):
 
     @staticmethod
     def get_owner(repo) ->list:
-        """ Searching for owners and adding them into a list """
+        """Searching for owners and adding them into a list"""
         owner_list = []
         for item in repo:
             if item['owner']['login']:
