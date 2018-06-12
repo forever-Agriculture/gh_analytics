@@ -2,8 +2,7 @@ from django.test import TestCase
 from .forms import AnalyticsForm
 
 valid_mocked_data = {'repos': 'Rv-029.Go', 'users': 'users', 'from_date': '2013-02-01', 'to_date': '2019-01-01'}
-invalid_return_dict = {'repos': 'Rv-029.Go', 'users': 'zzell',
-                       'from_date': '2013-02-01', 'to_date': '2019-01-0'}
+invalid_return_dict = {'repos': 'Rv-029.Go', 'users': 'zzell'}
 
 
 class TestForms(TestCase):

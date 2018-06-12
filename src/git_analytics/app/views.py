@@ -5,19 +5,13 @@ from .forms import AnalyticsForm
 
 
 class HomePageView(TemplateView):
-    """GH analytics class"""
+    """ GH analytics class """
     template_name = "base.html"
     form_class = AnalyticsForm
 
-    def get(self, request, *args, **kwargs):
-        super(HomePageView, self).get(self, request, *args, **kwargs)
-        form = self.form_class(request.GET)
-
-        return render(request, self.template_name, {'form': form})
-
     def post(self, request, *args, **kwargs):
         """ getting requested repos, calling count_pr method and then
-         returning computed data with a plot"""
+         returning computed data with a plot """
         super(HomePageView, self).get(self, request, *args, **kwargs)
         form = self.form_class(request.POST)
 
@@ -44,7 +38,7 @@ class HomePageView(TemplateView):
                     'from_date': from_date, 'to_date': to_date, 'global_pr_counter': global_pr_counter}
         return render(request, self.template_name, args)
 
-    def count_pr(self, repo, owner_list, users, from_date, to_date):
+    def count_pr(self, repo, owner_list, users, from_date, to_date) -> int:
         """ counting pull requests of users in requested repos """
         global_user_counter = 0
         for owner in owner_list:
@@ -61,8 +55,8 @@ class HomePageView(TemplateView):
         return global_user_counter
 
     @staticmethod
-    def get_repos(repos):
-        """ splitting repos and adding into a list"""
+    def get_repos(repos) -> list:
+        """ splitting repos and adding into a list """
         rep_list = []
         repos = repos.split(", ")
         for repo in repos:
@@ -70,8 +64,8 @@ class HomePageView(TemplateView):
         return rep_list
 
     @staticmethod
-    def get_owner(repo):
-        """searching for owners and adding them into a list"""
+    def get_owner(repo) ->list:
+        """ searching for owners and adding them into a list """
         owner_list = []
         for item in repo:
             if item['owner']['login']:
@@ -79,9 +73,9 @@ class HomePageView(TemplateView):
         return owner_list
 
     @staticmethod
-    def count_users(json_pr_resp, users, from_date, to_date):
+    def count_users(json_pr_resp, users, from_date, to_date) -> int:
         """ counting created pull requests of required users
-            and filtering by date"""
+            and filtering by date """
         count_list = []
         for pull_req in json_pr_resp:
             try:

@@ -12,6 +12,9 @@
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
               integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
               crossorigin="anonymous">
+        <link href="//cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+        <link href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.css" rel="stylesheet">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
         {% block extra_css %}{% endblock extra_css %}
 
     </head>
@@ -22,34 +25,37 @@
         <div class="container">
             <br>
           <div class="row">
-            <div class="col-md-6">
+            <div class="col-md-12" style="margin-right: -15px;">
               <form action="" method="post" role="form" >
                   {% csrf_token %}
-                  <div class="form-group col-8">
+                  <div class="form-group col-md-6">
                     <label for="id_repos">Repository name</label>
                     <input type="text" name="repos" value="{{ repos }}" maxlength="50" minlength="3" required class="form-control" id="id_repos" aria-describedby="repos" placeholder="example: Cycling_admin, Rv-029.Go">
                     <small id="repos_id" class="form-text text-muted">Required field, max 50 symbols</small>
                   </div>
-                  <div class="form-group col-8">
+                  <div class="form-group col-md-6">
                     <label for="id_users">Users</label>
                     <input type="text" name="users" value="{{ users }}" maxlength="50" minlength="3" required class="form-control" id="id_users" placeholder="example: PhilipUa, zzell, mosketrem">
                     <small id="users_id" class="form-text text-muted">Required field, max 50 symbols</small>
                   </div>
-                  <div class="form-group col-8">
+                  <div class="form-group col-md-6" id="from_date">
                     <label for="id_from_date">From</label>
-                    <input type="text" name="from_date" value="{{ from_date }}" maxlength="10" minlength="10" required class="form-control" id="id_from_date" placeholder="example: 2018-05-20">
-                    <small id="from_date_id" class="form-text text-muted">Required field</small>
+                    <input type="text" name="from_date" value="{{ from_date }}" required class="form-control" id="id_from_date" placeholder="example: 2016-01=01">
                   </div>
-                  <div class="form-group col-8">
+                  <div class="form-group col-md-6" id="to_date">
                     <label for="id_to_date">To</label>
-                    <input type="text" name="to_date" value="{{ to_date }}" maxlength="10" minlength="10" required class="form-control" id="id_to_date" placeholder="example: 2016-05-20">
-                    <small id="to_date_id" class="form-text text-muted">Required field</small>
+                    <input type="text" name="to_date" value="{{ to_date }}" required class="form-control" id="id_to_date" placeholder="example: 2019-01=01">
                   </div>
+                  <!--<div class="form-group col-8">-->
+                    <!--<label for="id_to_date">To</label>-->
+                    <!--<input type="text" name="to_date" value="{{ to_date }}" maxlength="10" minlength="10" required class="form-control" id="id_to_date" placeholder="example: 2016-05-20">-->
+                    <!--<small id="to_date_id" class="form-text text-muted">Required field</small>-->
+                  <!--</div>-->
 
                   <button type="submit" style="margin-left:2.5%;" class="btn btn-primary">Submit</button>
                </form>
             </div>
-              <div class="col-md-6 text-align-center">
+              <div class="col-md-12 text-center">
                 <h1>Created pull requests: {{ global_pr_counter }}</h1>
               </div>
           </div>
@@ -67,6 +73,28 @@
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
                 integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
                 crossorigin="anonymous"></script>
+        <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.js"></script>
+        <script type="text/javascript">
+            $(function () {
+                $("#from_date").datepicker({
+                    autoclose: true,
+                    todayHighlight: true,
+                    format:'yyyy-mm-dd',
+                    startDate: '1990-01-01',
+                    yearRange: "2000:2020"
+                }).datepicker('update', new Date(value));
+            });
+            $(function () {
+                $("#to_date").datepicker({
+                    autoclose: true,
+                    todayHighlight: true,
+                    format:'yyyy-mm-dd',
+                    endDate: '2030-01-01',
+                    yearRange: "2000:2020"
+                }).datepicker('update', new Date(value));
+            });
+        </script>
         {% block extra_js %}{% endblock extra_js %}
 
     </body>
